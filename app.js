@@ -94,18 +94,18 @@ function renderData(eqList) {
     const $listContainer = $('#list-container').empty(); 
 
     $.each(eqList, function(index, eq) {
-        // 組合中英文區域名稱
         const fullRegionText = (eq.region && eq.regionEn) 
             ? `${eq.region} (${eq.regionEn})` 
             : (eq.region || eq.regionEn || '未知區域');
 
-        // 💡 修正 1：明確將主點的 Unix Timestamp 轉換為在地時間格式字串
         const formattedMainTime = eq.dateTime 
             ? new Date(eq.dateTime).toLocaleString() 
             : '未知';
 
-        // --- 1. 繪製主數據源標記 ---
-        const mainMarker = L.marker([eq.lat, eq.lon]).addTo(map);
+        // --- 1. 繪製主數據源標記（強制置頂 zIndexOffset） ---
+        const mainMarker = L.marker([eq.lat, eq.lon], {
+            zIndexOffset: 1000 // 💡 讓主報告的圖示永遠顯示在最上層，不會被副觀測點遮住
+        }).addTo(map);
 
         mainMarker.bindPopup(`
             <b style="color:red;">[主報告] ${eq.center.toUpperCase()} 測報</b><br>
@@ -117,36 +117,45 @@ function renderData(eqList) {
 
         // --- 2. 檢查是否有其他機構的觀測數據 (eqs 陣列) ---
         if (eq.eqs && eq.eqs.length > 0) {
-            $.each(eq.eqs, function(i, subEq) {
-                
-                // 💡 修正 2：副觀測點的時間如果內層結構有獨立時間就用內層的，沒有就沿用主點時間
-                const subTime = subEq.dateTime || eq.dateTime;
-                const formattedSubTime = subTime 
-                    ? new Date(subTime).toLocaleString() 
-                    : '未知';
+            const totalSubPoints = eq.eqs.length;
 
-                const subMarker = L.circleMarker([subEq.lat, subEq.lon], {
-                    radius: 6,
+            $.each(eq.eqs, function(i, subEq) {
+                const subTime = subEq.dateTime || eq.dateTime;
+                const formattedSubTime = subTime ? new Date(subTime).toLocaleString() : '未知';
+
+                // 💡 核心優化：如果經緯度完全一樣或太接近，利用極座標公式將副點均勻散開在主點周圍
+                // 這樣在視覺上會形成一個精美的星狀分佈，點擊起來極為輕鬆！
+                const angle = (i * 2 * Math.PI) / totalSubPoints;
+                const radiusOffset = 0.15; // 散開的半徑範圍度數，可根據需求微調大小 (0.1 ~ 0.3)
+                
+                const displayLat = eq.lat + (Math.sin(angle) * radiusOffset);
+                const displayLon = eq.lon + (Math.cos(angle) * radiusOffset);
+
+                // 使用 CircleMarker
+                const subMarker = L.circleMarker([displayLat, displayLon], {
+                    radius: 8,          // 稍微加大圓圈半徑
+                    bubbleRadius: 15,   // 加大隱形點擊熱區
                     color: '#ff7800',      
                     fillColor: '#ffa500',  
-                    fillOpacity: 0.8
+                    fillOpacity: 0.8,
+                    weight: 2
                 }).addTo(map);
 
                 subMarker.bindPopup(`
                     <b style="color:orange;">[聯合觀測] ${subEq.type.toUpperCase()} 測報</b><br>
-                    <b>位置對照：</b>${fullRegionText}<br>
+                    <b>實際定位：</b>經度 ${subEq.lon}, 緯度 ${subEq.lat}<br>
                     <b>震級：</b>M ${subEq.mg}<br>
                     <b>深度：</b>${subEq.depth} km<br>
                     <b>時間：</b>${formattedSubTime}<br>
                     <a href="${subEq.url}" target="_blank">查看該機構原始報告</a>
                 `);
 
-                // 在主測量點與副測量點之間畫一條虛線
-                L.polyline([[eq.lat, eq.lon], [subEq.lat, subEq.lon]], {
-                    color: 'gray',
-                    weight: 1,
-                    dashArray: '5, 5',
-                    opacity: 0.7
+                // 💡 虛線會從「主點的真正坐標」連線到「分散後的副點坐標」
+                L.polyline([[eq.lat, eq.lon], [displayLat, displayLon]], {
+                    color: '#ff7800',
+                    weight: 1.5,
+                    dashArray: '4, 4',
+                    opacity: 0.6
                 }).addTo(map);
             });
         }
@@ -172,7 +181,7 @@ function renderData(eqList) {
             `);
         
         $item.on('click', function() {
-            map.setView([eq.lat, eq.lon], 6);
+            map.setView([eq.lat, eq.lon], 7); // 點擊側邊欄時稍微放大地圖，能更清晰看見分開的各機構點
             mainMarker.openPopup();
         });
 
