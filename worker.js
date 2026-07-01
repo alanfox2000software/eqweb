@@ -26,7 +26,7 @@ export default {
         const targetUrl = "http://eq.kyhtech.com/hapi/do.action?1=1";
         
         // 🎯 基礎必需參數（100% 還原你測試成功的 cURL 特徵）
-        let baseBody = `action=eqAndsAll&filter_GEN_mg=${mg}&lang=zh_CN&page.order=DESC&page.orderBy=dateTime&page.pageNo=1&page.pageSize=50&pn=com.topstcn.eq&time=${time}&type=${type}&vcode=346`;
+        let baseBody = `action=eqAndsAll&filter_GEN_mg=${mg}&lang=zh_CN&page.order=DESC&page.orderBy=dateTime&page.pageNo=1&page.pageSize=80&pn=com.topstcn.eq&time=${time}&type=${type}&vcode=346`;
         
         // 🎯 如果有選擇特定區域，將區域經緯度範圍參數拼接上去
         if (regionParams) {
