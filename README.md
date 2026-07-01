@@ -9,18 +9,6 @@ Check out the live application here: [https://alanfox2000software.github.io/eqwe
 
 ---
 
-## ✨ Features
-
-- **Global Coverage with Multi-Agency Data**: Integrates data filtering across 25 major global seismic networks and research institutes.
-- **Two-Way URL & UI Syncing**: 
-  - Changing filters dynamically updates the browser URL parameters (`?time=...&mg=...&type=...&region=...`) using the HTML5 History API without reloading the page.
-  - Opening a specific shared URL automatically pre-selects the corresponding dropdown filters and fetches the correct data instantly.
-- **Joint Observation Analysis (Spider-Web Network)**: When multiple agencies report the same seismic event, the map connects the main report node to sub-agency markers via dashed polylines to prevent overlapping and visualize joint data disparities.
-- **Adaptive Dynamic Layout**: Fully responsive flexbox/grid hybrid CSS layout that keeps the navigation filter bar pinned at the top and seamlessly resizes the sidebar and Leaflet canvas on various screen resolutions.
-- **International Standardized Time**: Displays event occurrences in a precise `YYYY-MM-DD HH:MM:SS` format, automatically detecting and appending the user's localized timezone offset (e.g., `UTC+8`, `UTC-5`).
-
----
-
 ## 🌐 Supported Data Sources
 
 The dashboard aggregates real-time data from **25 major international seismic networks and institutes** across the globe. Users can isolate records from any specific provider using the data source menu:
@@ -52,22 +40,3 @@ The dashboard aggregates real-time data from **25 major international seismic ne
 | **SSN** | Servicio Sismológico Nacional | Mexico |
 | **INDIA** | National Center for Seismology | India |
 | **All** | Consolidated View (All available agencies above) | Global |
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend Framework / Library**: HTML5, CSS3, JavaScript (ES6+), jQuery (v3.7.1)
-- **Map Render Engine**: [Leaflet.js](https://leafletjs.com/) (v1.9.4) & OpenStreetMap Tile Layers
-- **Backend Infrastructure**: Cloudflare Workers API (Reverse Proxy / Data Aggregator)
-
----
-
-## 📁 Project Structure
-
-```text
-eqweb/
-├── index.html     # Main application layout & English localized selector panel
-├── style.css      # Custom adaptive styling & layout fix for various viewports
-├── app.js         # Core frontend logic (API requests, Leaflet renders, URL-sync)
-└── README.md      # Project documentation
