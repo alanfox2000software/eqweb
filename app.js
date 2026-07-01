@@ -41,10 +41,7 @@ $(document).ready(function() {
         newUrlParams.set('mg', selectedMg);
         newUrlParams.set('type', selectedType);
         newUrlParams.set('region', selectedRegion);
-        
-        // 更新網址列而不重新整理網頁
-        const newRelativePathQuery = window.location.pathname + '?' + newUrlParams.toString();
-        history.pushState(null, '', newRelativePathQuery);
+        history.pushState(null, '', window.location.pathname + '?' + newUrlParams.toString());
 
         // 根據選擇區域轉換經緯度 filter 參數
         let regionParams = '';
