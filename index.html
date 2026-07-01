@@ -11,7 +11,63 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
+    <div id="filter-bar" style="background: #f8f9fa; padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+    
+    <div>
+        <label for="select-time"><b>時間範圍：</b></label>
+        <select id="select-time">
+            <option value="hour">過去 1 小時 (Hour)</option>
+            <option value="day">過去 24 小時 (Day)</option>
+            <option value="week">過去 1 週 (Week)</option>
+            <option value="month" selected>過去 1 個月 (Month)</option>
+            <option value="all">歷史所有 (All Time)</option>
+        </select>
+    </div>
 
+    <div>
+        <label for="select-mg"><b>最低震級：</b></label>
+        <select id="select-mg">
+            <option value="All" selected>所有震級</option>
+            <option value="2">M2.0+</option>
+            <option value="3">M4.0+</option>
+            <option value="4">M5.0+</option>
+            <option value="5">M6.0+</option>
+            <option value="6">M7.0+</option>
+            <option value="7">M8.0+</option>
+            <option value="8">M9.0+</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="select-type"><b>數據來源：</b></label>
+        <select id="select-type">
+            <option value="All">全部數據源 (All)</option>
+            <option value="USGS" selected>美國地質調查局 (USGS)</option>
+            <option value="EMSC">歐洲地中海地震中心 (EMSC)</option>
+            <option value="CWB">台灣中央氣象局 (CWB)</option>
+            <option value="CEIC">中國地震台網 (CEIC)</option>
+            <option value="JMA">日本氣象廳 (JMA)</option>
+            <option value="GFZ">德國波茨坦中心 (GFZ)</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="select-region"><b>觀測觀測區域：</b></label>
+        <select id="select-region">
+            <option value="World" selected>全球總覽 (World)</option>
+            <option value="Asia">亞洲 (Asia)</option>
+            <option value="Europe">歐洲 (Europe)</option>
+            <option value="NorthAmerica">北美洲 (NorthAmerica)</option>
+            <option value="SouthAmerica">南美洲 (SouthAmerica)</option>
+            <option value="Oceania">大洋洲 (Oceania)</option>
+            <option value="Antarctica">南極洲 (Antarctica)</option>
+        </select>
+    </div>
+
+    <button id="btn-refresh" style="padding: 4px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        🔄 重新整理
+    </button>
+</div>
     <div id="sidebar">
         <h2>最新地震列表</h2>
         <div id="list-container">數據同步中，請稍候...</div>
