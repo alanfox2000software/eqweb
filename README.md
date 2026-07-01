@@ -1,8 +1,10 @@
-# Latest Earthquake Monitor (eqweb)
+# 🌍 eqweb ~ Latest Earthquake Monitor 
+<img src="https://raw.githubusercontent.com/alanfox2000software/eqweb/refs/heads/main/.github/Pic/screenshot.png" />
+</p>
 
-A real-time, interactive global earthquake monitoring dashboard built with HTML5, CSS3, jQuery, and Leaflet.js. This application fetches seismic data from a custom Cloudflare Workers backend API and presents a comprehensive multi-agency joint observation analysis on a dynamic world map.
+This application presents a comprehensive multi-agency joint observation analysis on a dynamic world map.
 
-## 🚀 Live Demo
+## 🚀 Live
 Check out the live application here: [https://alanfox2000software.github.io/eqweb/](https://alanfox2000software.github.io/eqweb/)
 
 ---
