@@ -35,7 +35,8 @@ export default {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8",
+            "Accept-Language": "zh_TW",
+            "Accept-Encoding": "gzip",
             // 🔐 嚴格偽裝成標準的 Dalvik 虛擬機器環境（App 常見特徵），不帶任何瀏覽器痕跡
             "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 12; SM-A156E Build/SP1A.210812.016)",
             "EQ-Agent": "GooglePlayAppStore/com.topstcn.eq/3.6.1.346/Android/12/SM-A156E/e0NeKUb1Sny2PE2epzalvn/105c41e54edca8bbcd95ddc63e15c2e/null"
