@@ -94,12 +94,17 @@ function renderData(eqList) {
     const $listContainer = $('#list-container').empty(); 
 
     $.each(eqList, function(index, eq) {
-        // 組合中英文區域名稱（如果其中一個不存在，就只顯示另一個）
+        // 組合中英文區域名稱
         const fullRegionText = (eq.region && eq.regionEn) 
             ? `${eq.region} (${eq.regionEn})` 
             : (eq.region || eq.regionEn || '未知區域');
 
-        // --- 1. 繪製主數據源標記（例如 USGS 提供的點） ---
+        // 💡 修正 1：明確將主點的 Unix Timestamp 轉換為在地時間格式字串
+        const formattedMainTime = eq.dateTime 
+            ? new Date(eq.dateTime).toLocaleString() 
+            : '未知';
+
+        // --- 1. 繪製主數據源標記 ---
         const mainMarker = L.marker([eq.lat, eq.lon]).addTo(map);
 
         mainMarker.bindPopup(`
@@ -107,17 +112,23 @@ function renderData(eqList) {
             <b>區域：</b>${fullRegionText}<br>
             <b>震級：</b>M ${eq.mg}<br>
             <b>深度：</b>${eq.depth} km<br>
-            <b>時間：</b>${eq.dateTime ? new Date(eq.dateTime).toLocaleString() : '未知'}
+            <b>時間：</b>${formattedMainTime}
         `);
 
         // --- 2. 檢查是否有其他機構的觀測數據 (eqs 陣列) ---
         if (eq.eqs && eq.eqs.length > 0) {
             $.each(eq.eqs, function(i, subEq) {
                 
+                // 💡 修正 2：副觀測點的時間如果內層結構有獨立時間就用內層的，沒有就沿用主點時間
+                const subTime = subEq.dateTime || eq.dateTime;
+                const formattedSubTime = subTime 
+                    ? new Date(subTime).toLocaleString() 
+                    : '未知';
+
                 const subMarker = L.circleMarker([subEq.lat, subEq.lon], {
                     radius: 6,
-                    color: '#ff7800',      // 橘色邊框
-                    fillColor: '#ffa500',  // 橘色填充
+                    color: '#ff7800',      
+                    fillColor: '#ffa500',  
                     fillOpacity: 0.8
                 }).addTo(map);
 
@@ -126,6 +137,7 @@ function renderData(eqList) {
                     <b>位置對照：</b>${fullRegionText}<br>
                     <b>震級：</b>M ${subEq.mg}<br>
                     <b>深度：</b>${subEq.depth} km<br>
+                    <b>時間：</b>${formattedSubTime}<br>
                     <a href="${subEq.url}" target="_blank">查看該機構原始報告</a>
                 `);
 
@@ -139,7 +151,7 @@ function renderData(eqList) {
             });
         }
 
-        // --- 3. 動態建立側邊欄列表項目（同時顯示中英文） ---
+        // --- 3. 動態建立側邊欄列表項目 ---
         const sourceCount = eq.eqs ? eq.eqs.length + 1 : 1;
 
         const $item = $('<div></div>')
@@ -154,11 +166,11 @@ function renderData(eqList) {
                 </p>
                 <small>
                     主要來源: ${eq.center.toUpperCase()} | 
-                    <span style="color: #ff7800; font-weight:bold;">聯合機構觀測: ${sourceCount} 家</span>
+                    時間: ${formattedMainTime} | 
+                    <span style="color: #ff7800; font-weight:bold;">聯合觀測: ${sourceCount} 家</span>
                 </small>
             `);
         
-        // 點擊列表項目時，地圖自動平移到主標記位置
         $item.on('click', function() {
             map.setView([eq.lat, eq.lon], 6);
             mainMarker.openPopup();
@@ -167,7 +179,6 @@ function renderData(eqList) {
         $listContainer.append($item);
     });
 }
-
     // 啟動
     fetchEarthquakeData();
 });
