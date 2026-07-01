@@ -16,39 +16,49 @@ export default {
       try {
         const targetUrl = "http://eq.kyhtech.com/hapi/do.action?l=1";
         
+        // 💡 核心修正：改用標準的 URLSearchParams 物件封裝參數
+        // 這會強制 Cloudflare 發送最標準、帶有正確長度與邊界的表單格式
+        const searchParams = new URLSearchParams();
+        searchParams.append("action", "eQndsAll");
+        searchParams.append("filter_GEN_mg", "All");
+        searchParams.append("lang", "zh_CN");
+        searchParams.append("page.order", "DESC");
+        searchParams.append("page.orderBy", "dateTime");
+        searchParams.append("page.pageNo", "1");
+        searchParams.append("page.pageSize", "20");
+        searchParams.append("pn", "com.topstcn.eq");
+        searchParams.append("time", "month");
+        searchParams.append("type", "USGS");
+        searchParams.append("vcod", "346");
+
         const targetResponse = await fetch(targetUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept-Language": "zh_TW",
-            // 🔐 保持與 cURL 一致的設備驗證
-            "User-Agent": "GooglePlayAppStore/com.topstcn.eq/3.6.1.346/Android/12/SM-A156E/e0NeKUb1Sny2PE2epzalvn/105c41e54edca8bbcd95ddc63e15c2e/null",
+            "Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8",
+            // 🔐 嚴格偽裝成標準的 Dalvik 虛擬機器環境（App 常見特徵），不帶任何瀏覽器痕跡
+            "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 12; SM-A156E Build/SP1A.210812.016)",
             "EQ-Agent": "GooglePlayAppStore/com.topstcn.eq/3.6.1.346/Android/12/SM-A156E/e0NeKUb1Sny2PE2epzalvn/105c41e54edca8bbcd95ddc63e15c2e/null"
           },
-          body: "action=eQndsAll&filter_GEN_mg=All&lang=zh_CN&page.order=DESC&page.orderBy=dateTime&page.pageNo=1&page.pageSize=20&pn=com.topstcn.eq&time=month&type=USGS&vcod=346"
+          body: searchParams // 💡 傳入處理過的參數物件
         });
 
-        // 💡 讀取目標伺服器返回的原始文字
         const responseData = await targetResponse.text();
 
-        // 檢查是不是拿到了壞掉的網頁 HTML (例如對方的 500 錯誤頁面)
+        // 判定攔截
         if (responseData.trim().startsWith("<!DOCTYPE") || responseData.trim().startsWith("<html")) {
           return new Response(JSON.stringify({ 
             status: "error", 
-            message: "目標伺服器返回了 HTML 網頁而非 JSON 數據，可能是防爬蟲封鎖。",
-            debug_raw: responseData.substring(0, 200) 
+            message: "目標伺防護牆攔截了機房IP，請嘗試重新編譯部署。",
+            debug_raw: responseData.substring(0, 150) 
           }), {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json; charset=UTF-8" }
           });
         }
         
-        // 正常回傳
         return new Response(responseData, {
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json; charset=UTF-8"
-          }
+          headers: { ...corsHeaders, "Content-Type": "application/json; charset=UTF-8" }
         });
 
       } catch (err) {
