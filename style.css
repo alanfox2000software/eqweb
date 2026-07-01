@@ -1,30 +1,59 @@
-body {
+/* 全域與 body 基礎重設 */
+html, body {
     margin: 0;
     padding: 0;
-    display: flex;
     height: 100vh;
+    width: 100vw;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
+
+body {
+    display: flex;
+    flex-direction: column; /* 💡 修正 1：改為由上往下堆疊，確保控制列在最上面 */
+    overflow: hidden;       /* 避免整個網頁出現奇怪的外滾輪 */
+}
+
+/* 頂部篩選列樣式優化 */
+#filter-bar {
+    background: #f8f9fa !important; /* 強制設定淺灰背景色 */
+    color: #333333 !important;      /* 強制字體為深色，防止隱形 */
+    padding: 12px 15px;
+    border-bottom: 1px solid #dddddd;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;                /* 當螢幕變窄時，控制列會自動換行，不會塞爆 */
+    box-sizing: border-box;
+    z-index: 1010;                  /* 確保控制列選單可以壓在地圖上方 */
+}
+
+/* 💡 修正 2：新增主內容容器，自動吃掉控制列下方剩餘的所有垂直空間 */
+#main-container {
+    display: flex;                  /* 💡 讓內部的側邊欄與地圖保持左右並排 */
+    flex: 1;                        /* 💡 自動填滿剩下的 100% 高度 */
+    width: 100%;
+    overflow: hidden;
+}
+
+/* 側邊欄設定 */
 #sidebar {
     width: 360px;
     background: #ffffff;
-    overflow-y: auto;
+    overflow-y: auto;               /* 列表過長時自動出現內部捲軸 */
     box-shadow: 3px 0 10px rgba(0,0,0,0.1);
     z-index: 1000;
     padding: 20px;
     box-sizing: border-box;
+    height: 100%;                  /* 填滿 main-container 高度 */
 }
-h2 {
-    margin-top: 0;
-    font-size: 20px;
-    color: #333;
-    border-bottom: 2px solid #1890ff;
-    padding-bottom: 10px;
-}
+
+/* 地圖設定 */
 #map {
-    flex: 1;
-    height: 100%;
+    flex: 1;                        /* 地圖自動填滿右邊剩下的所有寬度 */
+    height: 100%;                  /* 填滿 main-container 高度 */
 }
+
+/* 列表項目與標籤 */
 .eq-item {
     padding: 12px;
     border-bottom: 1px solid #f0f0f0;
