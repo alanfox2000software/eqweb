@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最新地震監測</title>
+    <title>Latest Earthquake Monitor</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
     
@@ -15,32 +15,32 @@
     <div id="filter-bar">
         
         <div>
-            <label for="select-time"><b>時間範圍：</b></label>
+            <label for="select-time"><b>Time Range:</b></label>
             <select id="select-time">
-                <option value="hour">過去 1 小時 (Hour)</option>
-                <option value="day">過去 24 小時 (Day)</option>
-                <option value="week">過去 1 週 (Week)</option>
-                <option value="month" selected>過去 1 個月 (Month)</option>
-                <option value="all">歷史所有 (All Time)</option>
+                <option value="hour">Past 1 Hour</option>
+                <option value="day">Past 24 Hours</option>
+                <option value="week">Past 1 Week</option>
+                <option value="month" selected>Past 1 Month</option>
+                <option value="all">All Time (Historical)</option>
             </select>
         </div>
 
-<div>
-            <label for="select-mg"><b>震級：</b></label>
+        <div>
+            <label for="select-mg"><b>Min Magnitude:</b></label>
             <select id="select-mg">
-                <option value="All" selected>所有震級 (All)</option>
+                <option value="All" selected>All Magnitudes</option>
                 <option value="2">M2.0+</option>
                 <option value="3">M3.0+</option>
-				<option value="4">M4.0+</option>
+                <option value="4">M4.0+</option>
                 <option value="5">M5.0+</option>
                 <option value="6">M6.0+</option>
                 <option value="7">M7.0+</option>
                 <option value="8">M8.0+</option>
-			</select>
+            </select>
         </div>
 
         <div>
-            <label for="select-type"><b>數據來源：</b></label>
+            <label for="select-type"><b>Data Source:</b></label>
             <select id="select-type">
                 <option value="USGS" selected>USGS ; U.S. Geological Survey</option>
                 <option value="EMSC">EMSC ; EU Mediterranean Earthquake Centre</option>
@@ -71,28 +71,28 @@
         </div>
 
         <div>
-            <label for="select-region"><b>觀測區域：</b></label>
+            <label for="select-region"><b>Region:</b></label>
             <select id="select-region">
-                <option value="World" selected>全球總覽 (World)</option>
-                <option value="Asia">亞洲 (Asia)</option>
-                <option value="Europe">歐洲 (Europe)</option>
-                <option value="Africa">非洲 (Africa)</option>
-                <option value="NorthAmerica">北美洲 (NorthAmerica)</option>
-                <option value="SouthAmerica">南美洲 (SouthAmerica)</option>
-                <option value="Oceania">大洋洲 (Oceania)</option>
-                <option value="Antarctica">南極洲 (Antarctica)</option>
+                <option value="World" selected>Global Overview</option>
+                <option value="Asia">Asia</option>
+                <option value="Europe">Europe</option>
+                <option value="NorthAmerica">North America</option>
+                <option value="SouthAmerica">South America</option>
+                <option value="Oceania">Oceania</option>
+                <option value="Africa">Africa</option>
+                <option value="Antarctica">Antarctica</option>
             </select>
         </div>
 
         <button id="btn-refresh" style="padding: 4px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            🔄 重新整理
+            🔄 Refresh
         </button>
     </div>
 
     <div id="main-container">
         <div id="sidebar">
-            <h2>最新地震列表</h2>
-            <div id="list-container">數據同步中，請稍候...</div>
+            <h2>Latest Earthquakes</h2>
+            <div id="list-container">Syncing data, please wait...</div>
         </div>
         
         <div id="map"></div>
