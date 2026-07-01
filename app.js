@@ -102,19 +102,20 @@ function renderData(eqList) {
             ? new Date(eq.dateTime).toLocaleString() 
             : '未知';
 
-        // --- 1. 繪製主數據源標記（加入 detailUrl 連結） ---
+        // --- 1. 繪製主數據源標記 ---
         const mainMarker = L.marker([eq.lat, eq.lon], {
             zIndexOffset: 1000 
         }).addTo(map);
 
-        // 💡 這裡動態加入主報告的超連結
         const mainUrlHtml = eq.detailUrl 
             ? `<br><a href="${eq.detailUrl}" target="_blank" style="font-weight:bold;">查看 ${eq.center.toUpperCase()} 原始報告</a>` 
             : '';
 
+        // 💡 核心修正：在這裡的 bindPopup 中，精準補上緯度 (eq.lat) 與 經度 (eq.lon)
         mainMarker.bindPopup(`
             <b style="color:red;">[主報告] ${eq.center.toUpperCase()} 測報</b><br>
             <b>區域：</b>${fullRegionText}<br>
+            <b>定位坐標：</b>經度 ${eq.lon}, 緯度 ${eq.lat}<br>
             <b>震級：</b>M ${eq.mg}<br>
             <b>深度：</b>${eq.depth} km<br>
             <b>時間：</b>${formattedMainTime}
@@ -144,7 +145,6 @@ function renderData(eqList) {
                     weight: 2
                 }).addTo(map);
 
-                // 副報告的連結來自 subEq.url
                 const subUrlHtml = subEq.url 
                     ? `<br><a href="${subEq.url}" target="_blank">查看該機構原始報告</a>` 
                     : '';
