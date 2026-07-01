@@ -90,34 +90,83 @@ $(document).ready(function() {
     }
 
     // 5. 數據渲染函數（保持不變）
-    function renderData(eqList) {
-        const $listContainer = $('#list-container').empty(); 
+function renderData(eqList) {
+    const $listContainer = $('#list-container').empty(); 
 
-        $.each(eqList, function(index, eq) {
-            const marker = L.marker([eq.lat, eq.lon]).addTo(map);
-            marker.bindPopup(`
-                <b>${eq.region || eq.regionEn || '未知區域'}</b><br>
-                震級：M ${eq.mg}<br>
-                深度：${eq.depth} km<br>
-                來源：${eq.type || '未知'}<br>
-                時間：${eq.dateTime || ''}
-            `);
+    $.each(eqList, function(index, eq) {
+        // 組合中英文區域名稱（如果其中一個不存在，就只顯示另一個）
+        const fullRegionText = (eq.region && eq.regionEn) 
+            ? `${eq.region} (${eq.regionEn})` 
+            : (eq.region || eq.regionEn || '未知區域');
 
-            const $item = $('<div></div>')
-                .addClass('eq-item')
-                .html(`
-                    <p><span class="mg-badge">M ${eq.mg}</span> <b>${eq.region || eq.regionEn || '未知區域'}</b></p>
-                    <small>來源: ${eq.type || ''} | ${eq.dateTime || ''}</small>
+        // --- 1. 繪製主數據源標記（例如 USGS 提供的點） ---
+        const mainMarker = L.marker([eq.lat, eq.lon]).addTo(map);
+
+        mainMarker.bindPopup(`
+            <b style="color:red;">[主報告] ${eq.center.toUpperCase()} 測報</b><br>
+            <b>區域：</b>${fullRegionText}<br>
+            <b>震級：</b>M ${eq.mg}<br>
+            <b>深度：</b>${eq.depth} km<br>
+            <b>時間：</b>${eq.dateTime ? new Date(eq.dateTime).toLocaleString() : '未知'}
+        `);
+
+        // --- 2. 檢查是否有其他機構的觀測數據 (eqs 陣列) ---
+        if (eq.eqs && eq.eqs.length > 0) {
+            $.each(eq.eqs, function(i, subEq) {
+                
+                const subMarker = L.circleMarker([subEq.lat, subEq.lon], {
+                    radius: 6,
+                    color: '#ff7800',      // 橘色邊框
+                    fillColor: '#ffa500',  // 橘色填充
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                subMarker.bindPopup(`
+                    <b style="color:orange;">[聯合觀測] ${subEq.type.toUpperCase()} 測報</b><br>
+                    <b>位置對照：</b>${fullRegionText}<br>
+                    <b>震級：</b>M ${subEq.mg}<br>
+                    <b>深度：</b>${subEq.depth} km<br>
+                    <a href="${subEq.url}" target="_blank">查看該機構原始報告</a>
                 `);
-            
-            $item.on('click', function() {
-                map.setView([eq.lat, eq.lon], 5);
-                marker.openPopup();
-            });
 
-            $listContainer.append($item);
+                // 在主測量點與副測量點之間畫一條虛線
+                L.polyline([[eq.lat, eq.lon], [subEq.lat, subEq.lon]], {
+                    color: 'gray',
+                    weight: 1,
+                    dashArray: '5, 5',
+                    opacity: 0.7
+                }).addTo(map);
+            });
+        }
+
+        // --- 3. 動態建立側邊欄列表項目（同時顯示中英文） ---
+        const sourceCount = eq.eqs ? eq.eqs.length + 1 : 1;
+
+        const $item = $('<div></div>')
+            .addClass('eq-item')
+            .html(`
+                <p>
+                    <span class="mg-badge">M ${eq.mg}</span> 
+                    <b>${eq.region || '未知'}</b>
+                </p>
+                <p style="margin: 2px 0 5px 0; font-size: 0.85em; color: #666; font-style: italic;">
+                    ${eq.regionEn || ''}
+                </p>
+                <small>
+                    主要來源: ${eq.center.toUpperCase()} | 
+                    <span style="color: #ff7800; font-weight:bold;">聯合機構觀測: ${sourceCount} 家</span>
+                </small>
+            `);
+        
+        // 點擊列表項目時，地圖自動平移到主標記位置
+        $item.on('click', function() {
+            map.setView([eq.lat, eq.lon], 6);
+            mainMarker.openPopup();
         });
-    }
+
+        $listContainer.append($item);
+    });
+}
 
     // 啟動
     fetchEarthquakeData();
